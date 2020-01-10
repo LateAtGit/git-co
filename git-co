@@ -1,0 +1,58 @@
+#! /bin/bash
+
+set -e
+remoterepo="remotes/"`git remote`"/"
+set +e
+
+function showUsage() {
+  echo "Usage: $0 branch-pattern"
+  echo "branch-pattern: an unique pattern in branch name to switch to or - to switch to previous branch"
+  exit -1;
+}
+
+if [ "$1" == "" ] ; then
+  showUsage;
+fi;
+
+#dirhash=`pwd | md5sum`
+gitrepo=`git rev-parse --show-toplevel`
+dirhash=`basename $gitrepo | md5sum`
+mydir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )
+mydir=$mydir/gco
+if [ ! -d "$mydir" ] ; then
+  mkdir $mydir
+fi;
+filename=$mydir'/gco'${dirhash:26:6}'.conf'
+
+if [ "$1" == "-" ] ; then
+	branchname=`cat $filename`
+else
+	branchname=`git branch | grep $1`
+fi;
+
+if [ -z "$branchname" ]; then
+	branchname=`git branch -a | grep $1`
+	if [ -z "$branchname" ]; then
+		echo "No branches match given pattern"
+		exit -1;
+	fi;
+fi;
+
+matches=`echo "$branchname" | wc -l`
+
+if [ "$matches" -gt 1 ]; then
+	echo "More than one match"
+	exit -1;
+fi;
+
+if [[ ${branchname:0:1} == "*" ]]; then
+	branchname=`echo "$branchname" | sed -e "s~\* ~~g"`
+	echo already on $branchname
+	exit -1;
+else
+	prevbranch=`git branch | grep \* | sed -e "s~\* ~~g"`
+	echo $prevbranch > $filename
+	branchname=`echo $branchname | sed -e "s~$remoterepo~~g"`
+	echo switching...
+	git checkout $branchname
+fi;
