@@ -14,9 +14,9 @@ if [ "$1" == "" ] ; then
   showUsage;
 fi;
 
-#dirhash=`pwd | md5sum`
+#dirhash=`pwd | shasum`
 gitrepo=`git rev-parse --show-toplevel`
-dirhash=`basename $gitrepo | md5sum`
+dirhash=`basename $gitrepo | shasum`
 mydir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )
 mydir=$mydir/gco
 if [ ! -d "$mydir" ] ; then
@@ -40,9 +40,14 @@ fi;
 
 matches=`echo "$branchname" | wc -l`
 
-if [ "$matches" -gt 1 ]; then
+if [ "$matches" -gt 1 ] && [ "$1" != "master" ] && [ "$1" != "develop" ] && [ "$1" != "main" ]; then
+        echo $branchname
 	echo "More than one match"
 	exit -1;
+fi;
+
+if [ "$1" == "master" ] || [ "$1" == "develop" ] || [ "$1" == "main" ]; then
+	branchname=$1
 fi;
 
 if [[ ${branchname:0:1} == "*" ]]; then
