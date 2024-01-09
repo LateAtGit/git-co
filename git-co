@@ -20,7 +20,7 @@ dirhash=`basename $gitrepo | shasum`
 mydir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )
 mydir=$mydir/gco
 if [ ! -d "$mydir" ] ; then
-  mkdir $mydir
+  mkdir -p $mydir
 fi;
 filename=$mydir'/gco'${dirhash:26:6}'.conf'
 
