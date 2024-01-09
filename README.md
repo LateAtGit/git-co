@@ -1,5 +1,5 @@
 # git-co
-Useful git command to switch branches based on part of the branch name
+Useful git command to switch branches based on partial branch name
 
 Place the git-co file into ~/bin or another directory in PATH.
 
