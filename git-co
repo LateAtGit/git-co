@@ -56,8 +56,10 @@ if [[ ${branchname:0:1} == "*" ]]; then
 	exit -1;
 else
 	prevbranch=`git branch | grep \* | sed -e "s~\* ~~g"`
-	echo $prevbranch > $filename
 	branchname=`echo $branchname | sed -e "s~$remoterepo~~g"`
 	echo switching...
+	set -e
 	git checkout $branchname
+	set +e
+	echo $prevbranch > $filename
 fi;
